@@ -33,7 +33,7 @@ class ChessPosition:
             result.append(ChessCandidate(uci=move.uci(), resulting_fen=next_board.fen()))
         return tuple(result)
 
-    def apply(self, candidate: ChessCandidate) -> "ChessPosition":
+    def apply(self, candidate: ChessCandidate) -> ChessPosition:
         board = self.board()
         move = chess.Move.from_uci(candidate.uci)
         if move not in board.legal_moves:

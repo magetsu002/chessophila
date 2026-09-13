@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from enum import Enum
 import random
-from typing import Generic, Protocol, Sequence, TypeVar
+from collections.abc import Sequence
+from dataclasses import dataclass
+from enum import StrEnum
+from typing import Generic, Protocol, TypeVar
 
 T = TypeVar("T")
 
 
-class Side(str, Enum):
+class Side(StrEnum):
     LEFT = "left"
     RIGHT = "right"
 
