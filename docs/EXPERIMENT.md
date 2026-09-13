@@ -1,28 +1,18 @@
 # Experiment contract
 
-Chessophila is an experiment, not a chess-themed animation. The repository keeps the
-chess environment, neural decision system, reward/plasticity model, and viewer separate
-so each claim can be tested independently.
+Chessophila is an experiment, not a chess-themed animation. The repository keeps the chess environment, neural decision system, reward/plasticity model, and viewer separate so each claim can be tested independently.
 
-## First falsifiable milestone
+## Validation criterion
 
-> A pinned connectome simulation makes a reproducible left/right decision between two
-> legal chess continuations, and the full physical presentation is logged.
+A pinned connectome simulation must make a reproducible left/right decision between two legal chess continuations, with the complete physical presentation and neural readout recorded.
 
-The milestone does **not** claim that the fly understands chess or has learned an opening.
+Passing this criterion does **not** mean that the fly understands chess or has learned an opening. Those are stronger claims that require separate learning experiments and controls.
 
 ## Decision interface
 
-A legal chess position is converted into candidate resulting positions. A trial presents
-two candidates as left/right sensory stimuli. The neural backend may return only a
-physical choice (`left` or `right`). It does not receive SAN/UCI notation, opening names,
-engine rankings, or the identity of the rewarded move.
+A legal chess position is converted into candidate resulting positions. A trial presents two candidates as left/right sensory stimuli. The neural backend may return only a physical choice (`left` or `right`). It does not receive SAN/UCI notation, opening names, engine rankings, or the identity of the rewarded move.
 
-Because biological output is noisy, one pairwise decision consists of an odd number of
-bouts. Left/right placement is randomized independently for every bout. Multi-move chess
-positions can be reduced through a randomized knockout bracket initially; later
-experiments must measure and report bracket/order effects rather than assuming pairwise
-preferences are transitive.
+Because biological output is noisy, one pairwise decision consists of an odd number of bouts. Left/right placement is randomized independently for every bout. Multi-move chess positions can be reduced through a randomized knockout bracket initially; experiments must measure and report bracket/order effects rather than assuming pairwise preferences are transitive.
 
 ## Required trial record
 
@@ -41,7 +31,7 @@ Every real neural bout must eventually persist at least:
 - reward/punishment delivered after the decision
 - timing information
 
-## Controls before chess-learning claims
+## Controls required before chess-learning claims
 
 At minimum:
 
@@ -57,13 +47,8 @@ A result that fails these controls is reported as a failure or artifact, not lea
 
 ## Engine boundary
 
-Stockfish may be used as an **external evaluator/critic** during selected curriculum
-experiments. It must never make the fly's choice. Exact engine scores should not be fed
-as a hidden policy signal; reward shaping must be explicit, bounded, versioned, and
-reported.
+Stockfish may be used as an **external evaluator/critic** during selected curriculum experiments. It must never make the fly's choice. Exact engine scores should not be fed as a hidden policy signal; reward shaping must be explicit, bounded, versioned, and reported.
 
 ## Visualization boundary
 
-The 3D viewer consumes recorded/live telemetry. It never fabricates neural choices. Any
-stylized brain rendering must distinguish measured activity from purely decorative
-visual effects.
+The 3D viewer consumes recorded/live telemetry. It never fabricates neural choices. Any stylized brain rendering must distinguish measured activity from purely decorative visual effects.
