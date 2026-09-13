@@ -1,0 +1,44 @@
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "chessophila"
+version = "0.1.0"
+description = "A reproducible experimental harness for connectome-driven chess choice."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Magetsu" }]
+dependencies = [
+  "python-chess>=1.999,<2",
+]
+
+[project.optional-dependencies]
+sim = [
+  "brian2==2.5.1",
+  "numpy==1.24.4",
+  "pandas==2.3.3",
+  "joblib==1.6.0",
+  "pyarrow==25.0.1",
+  "cython==0.29.36",
+  "setuptools==80.10.2",
+]
+dev = [
+  "pytest>=8.3,<9",
+  "ruff>=0.11,<1",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/chessophila"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
