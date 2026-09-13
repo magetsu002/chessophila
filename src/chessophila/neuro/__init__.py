@@ -4,6 +4,7 @@ from .provenance import (
     load_upstream_lock,
     verify_upstream,
 )
+from .readout import CompetitiveSpikeReadout, ReadoutResult
 from .shiu import (
     FlyWireIndex,
     ShiuSimulator,
@@ -13,7 +14,9 @@ from .shiu import (
 )
 
 __all__ = [
+    "CompetitiveSpikeReadout",
     "FlyWireIndex",
+    "ReadoutResult",
     "ShiuSimulator",
     "ShiuTrialResult",
     "SimulatorDependencyError",
