@@ -15,13 +15,14 @@ class Side(str, Enum):
 
 
 class ChoiceBackend(Protocol[T]):
-    """Backend that converts one left/right presentation into one physical choice.
+    """Convert one left/right presentation into a physical choice or non-response.
 
-    A future fly-connectome backend implements this protocol. The protocol deliberately
-    knows nothing about chess, Stockfish, or opening names.
+    A fly-connectome backend implements this protocol. The protocol deliberately knows
+    nothing about chess, Stockfish, or opening names. Returning `None` means that the
+    neural readout did not produce a decisive physical response.
     """
 
-    def choose(self, *, left: T, right: T, seed: int) -> Side:
+    def choose(self, *, left: T, right: T, seed: int) -> Side | None:
         ...
 
 
@@ -29,8 +30,8 @@ class ChoiceBackend(Protocol[T]):
 class Bout(Generic[T]):
     left: T
     right: T
-    selected_side: Side
-    selected: T
+    selected_side: Side | None
+    selected: T | None
     seed: int
 
 
@@ -40,22 +41,32 @@ class Decision(Generic[T]):
     bouts: tuple[Bout[T], ...]
 
 
+class InsufficientDecisionsError(RuntimeError):
+    """Raised when bounded neural bouts do not produce enough decisive responses."""
+
+    def __init__(self, message: str, bouts: tuple[object, ...]) -> None:
+        super().__init__(message)
+        self.bouts = bouts
+
+
 @dataclass(slots=True)
 class PairwiseProtocol(Generic[T]):
     """Resolve a noisy A/B preference with randomized left/right placement.
 
-    `best_of` is intentionally odd, which prevents tied pairwise votes. Orientation is
-    randomized independently for every bout to stop a fixed turning bias from becoming
-    a chess preference.
+    `best_of` counts decisive responses and is intentionally odd. Non-responses are
+    recorded but never coerced into a side. Total attempts are bounded by `max_bouts`.
     """
 
     backend: ChoiceBackend[T]
     best_of: int = 5
     seed: int = 0
+    max_bouts: int | None = None
 
     def __post_init__(self) -> None:
         if self.best_of < 1 or self.best_of % 2 == 0:
             raise ValueError("best_of must be a positive odd integer")
+        if self.max_bouts is not None and self.max_bouts < self.best_of:
+            raise ValueError("max_bouts must be at least best_of")
 
     def decide(self, a: T, b: T) -> Decision[T]:
         if a == b:
@@ -65,8 +76,9 @@ class PairwiseProtocol(Generic[T]):
         a_wins = 0
         b_wins = 0
         bouts: list[Bout[T]] = []
+        limit = self.max_bouts if self.max_bouts is not None else self.best_of * 3
 
-        for _ in range(self.best_of):
+        while a_wins + b_wins < self.best_of and len(bouts) < limit:
             if rng.getrandbits(1):
                 left, right = a, b
             else:
@@ -74,17 +86,21 @@ class PairwiseProtocol(Generic[T]):
 
             bout_seed = rng.getrandbits(63)
             side = self.backend.choose(left=left, right=right, seed=bout_seed)
+            selected: T | None
             if side is Side.LEFT:
                 selected = left
             elif side is Side.RIGHT:
                 selected = right
+            elif side is None:
+                selected = None
             else:
                 raise ValueError(f"backend returned invalid side: {side!r}")
 
             if selected == a:
                 a_wins += 1
-            else:
+            elif selected == b:
                 b_wins += 1
+
             bouts.append(
                 Bout(
                     left=left,
@@ -93,6 +109,12 @@ class PairwiseProtocol(Generic[T]):
                     selected=selected,
                     seed=bout_seed,
                 )
+            )
+
+        if a_wins + b_wins < self.best_of:
+            raise InsufficientDecisionsError(
+                f"only {a_wins + b_wins} decisive responses in {len(bouts)} bouts",
+                tuple(bouts),
             )
 
         winner = a if a_wins > b_wins else b
@@ -110,6 +132,7 @@ class KnockoutProtocol(Generic[T]):
     backend: ChoiceBackend[T]
     best_of: int = 5
     seed: int = 0
+    max_bouts: int | None = None
 
     def decide(self, candidates: Sequence[T]) -> Decision[T]:
         if not candidates:
@@ -139,6 +162,7 @@ class KnockoutProtocol(Generic[T]):
                     backend=self.backend,
                     best_of=self.best_of,
                     seed=pair_seed,
+                    max_bouts=self.max_bouts,
                 ).decide(a, b)
                 next_round.append(decision.winner)
                 bouts.extend(decision.bouts)

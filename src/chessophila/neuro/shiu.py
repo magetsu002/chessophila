@@ -24,7 +24,7 @@ class FlyWireIndex:
     index_to_flywire: dict[int, int]
 
     @classmethod
-    def from_ids(cls, flywire_ids: Sequence[int]) -> "FlyWireIndex":
+    def from_ids(cls, flywire_ids: Sequence[int]) -> FlyWireIndex:
         normalized = [int(value) for value in flywire_ids]
         if len(set(normalized)) != len(normalized):
             raise ValueError("FlyWire IDs must be unique")
@@ -39,7 +39,8 @@ class FlyWireIndex:
             try:
                 result.append(self.flywire_to_index[flywire_id])
             except KeyError as exc:
-                raise UnknownFlyWireIdError(f"FlyWire ID not present in connectome: {flywire_id}") from exc
+                message = f"FlyWire ID not present in connectome: {flywire_id}"
+                raise UnknownFlyWireIdError(message) from exc
         return result
 
 
@@ -49,7 +50,16 @@ class ShiuTrialResult:
     spikes_by_flywire_id: dict[int, tuple[float, ...]]
 
     def spike_count(self, flywire_ids: Iterable[int]) -> int:
-        return sum(len(self.spikes_by_flywire_id.get(int(flywire_id), ())) for flywire_id in flywire_ids)
+        return sum(
+            len(self.spikes_by_flywire_id.get(int(flywire_id), ()))
+            for flywire_id in flywire_ids
+        )
+
+
+def _normalize_seed(seed: int) -> int:
+    """Map an arbitrary Python integer to the 32-bit seed domain used by NumPy/Brian2."""
+
+    return int(seed) & 0xFFFFFFFF
 
 
 class ShiuSimulator:
@@ -119,8 +129,9 @@ class ShiuSimulator:
                 "Brian2 and NumPy are required by the pinned simulator environment"
             ) from exc
 
-        np.random.seed(seed & 0xFFFFFFFF)
-        brian2.seed(seed)
+        normalized = _normalize_seed(seed)
+        np.random.seed(normalized)
+        brian2.seed(normalized)
 
     def run_trial(
         self,

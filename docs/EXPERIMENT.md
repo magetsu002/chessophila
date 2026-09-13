@@ -10,9 +10,9 @@ Passing this criterion does **not** mean that the fly understands chess or has l
 
 ## Decision interface
 
-A legal chess position is converted into candidate resulting positions. A trial presents two candidates as left/right sensory stimuli. The neural backend may return only a physical choice (`left` or `right`). It does not receive SAN/UCI notation, opening names, engine rankings, or the identity of the rewarded move.
+A legal chess position is converted into candidate resulting positions. A trial presents two candidates as left/right sensory stimuli. The neural backend may return a physical choice (`left` or `right`) or no decisive response. A non-response is logged and may trigger another bounded bout; it is never coerced into a chess move. The backend does not receive SAN/UCI notation, opening names, engine rankings, or the identity of the rewarded move.
 
-Because biological output is noisy, one pairwise decision consists of an odd number of bouts. Left/right placement is randomized independently for every bout. Multi-move chess positions can be reduced through a randomized knockout bracket initially; experiments must measure and report bracket/order effects rather than assuming pairwise preferences are transitive.
+Because biological output is noisy, one pairwise decision targets an odd number of decisive bouts. Left/right placement is randomized independently for every bout. Multi-move chess positions can be reduced through a randomized knockout bracket; experiments must measure and report bracket/order effects rather than assuming pairwise preferences are transitive.
 
 ## Required trial record
 
@@ -26,8 +26,8 @@ Every real neural bout must eventually persist at least:
 - left and right resulting positions
 - left/right stimulus mapping
 - raw neural readout needed to reproduce the decoded side
-- decoded physical side
-- selected chess candidate
+- decoded physical side or explicit non-response
+- selected chess candidate, if any
 - reward/punishment delivered after the decision
 - timing information
 

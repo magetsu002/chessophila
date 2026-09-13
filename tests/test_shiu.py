@@ -1,6 +1,7 @@
 import pytest
 
 from chessophila.neuro import FlyWireIndex, ShiuTrialResult, UnknownFlyWireIdError
+from chessophila.neuro.shiu import _normalize_seed
 
 
 def test_flywire_index_round_trip() -> None:
@@ -34,3 +35,9 @@ def test_trial_result_counts_only_requested_neurons() -> None:
     assert result.spike_count([101]) == 2
     assert result.spike_count([101, 202]) == 3
     assert result.spike_count([999]) == 0
+
+
+def test_seed_normalization_matches_numpy_seed_domain() -> None:
+    assert _normalize_seed(0) == 0
+    assert _normalize_seed(0x1_0000_0001) == 1
+    assert _normalize_seed((1 << 63) - 1) == 0xFFFFFFFF
