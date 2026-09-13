@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 import random
-from typing import Protocol, Sequence, TypeVar
+from typing import Generic, Protocol, Sequence, TypeVar
 
 T = TypeVar("T")
 
@@ -25,7 +25,7 @@ class ChoiceBackend(Protocol[T]):
 
 
 @dataclass(frozen=True, slots=True)
-class Bout[T]:
+class Bout(Generic[T]):
     left: T
     right: T
     selected_side: Side
@@ -34,13 +34,13 @@ class Bout[T]:
 
 
 @dataclass(frozen=True, slots=True)
-class Decision[T]:
+class Decision(Generic[T]):
     winner: T
     bouts: tuple[Bout[T], ...]
 
 
 @dataclass(slots=True)
-class PairwiseProtocol[T]:
+class PairwiseProtocol(Generic[T]):
     """Resolve a noisy A/B preference with randomized left/right placement.
 
     `best_of` is intentionally odd, which prevents tied pairwise votes. Orientation is
@@ -61,7 +61,8 @@ class PairwiseProtocol[T]:
             raise ValueError("pairwise candidates must be distinct")
 
         rng = random.Random(self.seed)
-        wins = {a: 0, b: 0}
+        a_wins = 0
+        b_wins = 0
         bouts: list[Bout[T]] = []
 
         for _ in range(self.best_of):
@@ -79,7 +80,10 @@ class PairwiseProtocol[T]:
             else:
                 raise ValueError(f"backend returned invalid side: {side!r}")
 
-            wins[selected] += 1
+            if selected == a:
+                a_wins += 1
+            else:
+                b_wins += 1
             bouts.append(
                 Bout(
                     left=left,
@@ -90,12 +94,12 @@ class PairwiseProtocol[T]:
                 )
             )
 
-        winner = a if wins[a] > wins[b] else b
+        winner = a if a_wins > b_wins else b
         return Decision(winner=winner, bouts=tuple(bouts))
 
 
 @dataclass(slots=True)
-class KnockoutProtocol[T]:
+class KnockoutProtocol(Generic[T]):
     """Select one candidate using repeated, randomized pairwise decisions.
 
     This is a transport protocol, not a claim that biological preferences are transitive.
@@ -109,8 +113,9 @@ class KnockoutProtocol[T]:
     def decide(self, candidates: Sequence[T]) -> Decision[T]:
         if not candidates:
             raise ValueError("at least one candidate is required")
-        if len(set(candidates)) != len(candidates):
-            raise ValueError("candidates must be unique")
+        for index, candidate in enumerate(candidates):
+            if any(candidate == prior for prior in candidates[:index]):
+                raise ValueError("candidates must be unique")
         if len(candidates) == 1:
             return Decision(winner=candidates[0], bouts=())
 
