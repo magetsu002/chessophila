@@ -19,7 +19,7 @@ class ActivationStimulus:
     versioned experimental assumption.
     """
 
-    activated: tuple[int, ...]
+    activated: tuple[int, ...] = ()
     activated_secondary: tuple[int, ...] = ()
     silenced: tuple[int, ...] = ()
 
