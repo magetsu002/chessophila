@@ -26,7 +26,8 @@ out/
 # Logs
 *.log
 
-# Large/reproducible experiment data must not be committed
-data/raw/
-data/cache/
-artifacts/
+# Large/reproducible experiment data and external source checkouts
+/data/raw/
+/data/cache/
+/artifacts/
+/vendor/

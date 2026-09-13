@@ -3,13 +3,13 @@ from __future__ import annotations
 import random
 from collections.abc import Sequence
 from dataclasses import dataclass
-from enum import StrEnum
+from enum import Enum
 from typing import Generic, Protocol, TypeVar
 
 T = TypeVar("T")
 
 
-class Side(StrEnum):
+class Side(str, Enum):
     LEFT = "left"
     RIGHT = "right"
 

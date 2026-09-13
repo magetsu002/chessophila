@@ -1,0 +1,29 @@
+{
+  "name": "shiu-flywire-v783",
+  "repository": "https://github.com/philshiu/Drosophila_brain_model.git",
+  "commit": "91bdd1e7dcf193f3e7ca5a8933497fcef63b7960",
+  "flywire_materialization": 783,
+  "license": "MIT",
+  "artifacts": [
+    {
+      "path": "model.py",
+      "size": 9024,
+      "git_blob_sha1": "5ba7083cf55bf6092967f8d9065e86cd677efed1"
+    },
+    {
+      "path": "Completeness_783.csv",
+      "size": 3327347,
+      "git_blob_sha1": "b5a26b82b69a3c2e7fd99cd6810c36fc8f0e492b"
+    },
+    {
+      "path": "Connectivity_783.parquet",
+      "size": 100804642,
+      "git_blob_sha1": "d386555d1a5f40ebfa1380bcb05b1fab044855fd"
+    },
+    {
+      "path": "environment.yml",
+      "size": 174,
+      "git_blob_sha1": "27599c545d10fc702777cb372ab4333e73c225b8"
+    }
+  ]
+}
