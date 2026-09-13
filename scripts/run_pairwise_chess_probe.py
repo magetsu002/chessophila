@@ -9,7 +9,12 @@ from brian2 import ms
 
 from chessophila.chess import ChessPosition
 from chessophila.choice import InsufficientDecisionsError, PairwiseProtocol
-from chessophila.neuro import NeuralChoiceTrace, ShiuChoiceBackend, ShiuSimulator
+from chessophila.neuro import (
+    NeuralChoiceTrace,
+    ShiuChoiceBackend,
+    ShiuSimulator,
+    load_upstream_lock,
+)
 from chessophila.neuro.visual import VisualChessChoiceBackend, load_visual_feature_map
 
 
@@ -48,18 +53,42 @@ def main() -> int:
         print(json.dumps({"winner": None, "error": str(exc)}, indent=2))
         return 2
 
+    lock = load_upstream_lock()
     bouts = []
     for bout, trace in zip(decision.bouts, traces, strict=True):
         bouts.append({
             "left": bout.left.uci,
             "right": bout.right.uci,
+            "left_fen": bout.left.resulting_fen,
+            "right_fen": bout.right.resulting_fen,
             "dna02_left_spikes": trace.readout.left_spikes,
             "dna02_right_spikes": trace.readout.right_spikes,
             "selected_side": bout.selected_side.value if bout.selected_side else None,
             "selected_move": bout.selected.uci if bout.selected else None,
             "seed": bout.seed,
+            "active_neurons": len(trace.trial.spikes_by_flywire_id),
+            "total_spikes": sum(len(v) for v in trace.trial.spikes_by_flywire_id.values()),
         })
-    print(json.dumps({"winner": decision.winner.uci, "bouts": bouts}, indent=2))
+    payload = {
+        "schema_version": 1,
+        "source": "real-connectome",
+        "simulator": {
+            "name": lock.name,
+            "commit": lock.commit,
+            "flywire_materialization": lock.flywire_materialization,
+            "codegen": "numpy",
+        },
+        "experiment": {
+            "a": args.a,
+            "b": args.b,
+            "best_of": args.best_of,
+            "duration_ms": args.duration_ms,
+            "seed": args.seed,
+        },
+        "winner": decision.winner.uci,
+        "bouts": bouts,
+    }
+    print(json.dumps(payload, indent=2))
     return 0
 
 

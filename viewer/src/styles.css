@@ -1,0 +1,374 @@
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #eef4fb;
+  background: #07090d;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+button {
+  font: inherit;
+}
+
+.app-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at 50% 25%, rgba(50, 75, 92, 0.16), transparent 34%),
+    #07090d;
+}
+
+.scene-wrap {
+  position: absolute;
+  inset: 0;
+}
+.glass {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(145deg, rgba(18, 24, 32, 0.72), rgba(9, 13, 19, 0.5));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 18px 60px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(22px) saturate(1.25);
+  -webkit-backdrop-filter: blur(22px) saturate(1.25);
+}
+
+.topbar {
+  position: absolute;
+  top: 22px;
+  left: 24px;
+  right: 24px;
+  min-height: 78px;
+  padding: 15px 18px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  color: #7f91a7;
+  margin-bottom: 4px;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(20px, 2.4vw, 30px);
+  letter-spacing: 0.08em;
+  font-weight: 760;
+}
+.source-chip {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 9px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(119, 255, 223, 0.16);
+  background: rgba(40, 103, 91, 0.1);
+  color: #b8ffea;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.source-chip span {
+  color: #73869d;
+  font-weight: 500;
+}
+
+.bout-card {
+  position: absolute;
+  left: 24px;
+  bottom: 104px;
+  width: min(390px, calc(100vw - 48px));
+  padding: 16px;
+  border-radius: 20px;
+}
+
+.bout-card-head,
+.steer-labels,
+.duel-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bout-card-head {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: #77879a;
+}
+.bout-card-head strong {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+.decision { color: #91ffe2; }
+.neutral { color: #a9b4c1; }
+
+.duel-row {
+  gap: 18px;
+  padding: 16px 0 12px;
+}
+
+.duel-row div {
+  display: grid;
+  gap: 3px;
+}
+
+.duel-row small,
+.stat span,
+.steer-labels {
+  color: #748499;
+  font-size: 10px;
+  letter-spacing: 0.13em;
+}
+
+.duel-row strong {
+  font-size: 22px;
+  font-weight: 760;
+}
+
+.align-right { text-align: right; }
+.versus { color: #516073; font-size: 11px; }
+.steer-meter {
+  height: 9px;
+  display: flex;
+  gap: 3px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.steer-fill {
+  min-width: 4px;
+  transition: flex 420ms ease;
+}
+
+.steer-fill.left {
+  background: linear-gradient(90deg, #3975d7, #6bc1ff);
+}
+
+.steer-fill.right {
+  background: linear-gradient(90deg, #f0b16a, #c96a38);
+}
+
+.steer-labels {
+  margin-top: 7px;
+}
+
+.stats-card {
+  position: absolute;
+  right: 24px;
+  bottom: 104px;
+  width: min(390px, calc(100vw - 48px));
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 14px;
+  border-radius: 20px;
+}
+.stat {
+  min-height: 66px;
+  padding: 11px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.025);
+  display: grid;
+  align-content: center;
+  gap: 4px;
+}
+
+.stat strong {
+  font-size: 19px;
+  letter-spacing: 0.02em;
+}
+
+.timeline {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  min-width: min(570px, calc(100vw - 48px));
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 18px;
+}
+
+.timeline button {
+  border: 0;
+  color: #dbe6f2;
+  background: transparent;
+  cursor: pointer;
+}
+
+.timeline > button:first-child,
+.timeline > button:last-child {
+  font-size: 28px;
+  color: #7f91a7;
+}
+.play {
+  min-width: 70px;
+  height: 34px;
+  border-radius: 10px !important;
+  background: rgba(255, 255, 255, 0.055) !important;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+}
+
+.ticks {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.tick {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border-radius: 50%;
+  background: #3e4958 !important;
+  transition: transform 160ms ease, background 160ms ease;
+}
+
+.tick.decisive { background: #557d74 !important; }
+.tick.active {
+  transform: scale(1.55);
+  background: #8fffe1 !important;
+  box-shadow: 0 0 13px rgba(118, 255, 220, 0.65);
+}
+
+.provenance {
+  position: absolute;
+  right: 30px;
+  top: 112px;
+  display: flex;
+  gap: 10px;
+  color: #526173;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  pointer-events: none;
+}
+.board-label {
+  min-width: 96px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 12px;
+  background: rgba(7, 11, 16, 0.78);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(12px);
+  text-align: center;
+  color: #aebdce;
+}
+
+.board-label span {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 8px;
+  letter-spacing: 0.15em;
+  color: #637488;
+}
+
+.board-label strong {
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+.board-label.selected {
+  border-color: rgba(121, 255, 219, 0.42);
+  color: #b9ffec;
+  box-shadow: 0 0 30px rgba(71, 232, 192, 0.18);
+}
+
+.fatal {
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  color: #aebccc;
+  background: #07090d;
+}
+
+/* Deliberately minimal scene chrome. Keep the 3D experiment dominant. */
+.brand-block {
+  position: absolute;
+  top: 26px;
+  left: 30px;
+  pointer-events: none;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.55);
+}
+
+.brand-kicker {
+  margin-bottom: 5px;
+  color: #66798f;
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.22em;
+}
+
+.brand-block h1 {
+  font-size: 25px;
+  font-weight: 760;
+  letter-spacing: 0.075em;
+}
+
+.run-state {
+  position: absolute;
+  top: 31px;
+  right: 31px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #708197;
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.11em;
+  pointer-events: none;
+}
+.run-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #76d8be;
+  box-shadow: 0 0 10px rgba(118, 216, 190, 0.42);
+}
+
+.run-separator {
+  color: #354353;
+}
+
+/* Blur over a WebGL canvas is expensive on some Linux compositors. */
+.glass {
+  background: linear-gradient(145deg, rgba(16, 22, 30, 0.88), rgba(8, 12, 17, 0.8));
+  backdrop-filter: blur(10px) saturate(1.12);
+  -webkit-backdrop-filter: blur(10px) saturate(1.12);
+}
+
+@media (max-width: 760px) {
+  .brand-block { top: 18px; left: 18px; }
+  .run-state { top: 22px; right: 18px; }
+  .brand-block h1 { font-size: 20px; }
+  .stats-card { display: none; }
+  .bout-card { left: 18px; bottom: 96px; }
+  .timeline { bottom: 18px; }
+}
