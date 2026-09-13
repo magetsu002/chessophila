@@ -70,9 +70,10 @@ class ShiuSimulator:
     and translates spike trains back to FlyWire IDs.
     """
 
-    def __init__(self, root: Path) -> None:
-        self.root = root.resolve()
+    def __init__(self, root: Path | str, *, codegen_target: str | None = None) -> None:
+        self.root = Path(root).resolve()
         verify_upstream(self.root)
+        self.codegen_target = codegen_target
         self._model: ModuleType | None = None
         self._index: FlyWireIndex | None = None
 
@@ -83,6 +84,17 @@ class ShiuSimulator:
     @property
     def connectivity_path(self) -> Path:
         return self.root / "Connectivity_783.parquet"
+
+    def _configure_codegen(self) -> None:
+        if self.codegen_target is None:
+            return
+        try:
+            import brian2
+        except ModuleNotFoundError as exc:
+            raise SimulatorDependencyError(
+                "Brian2 is required by the pinned simulator environment"
+            ) from exc
+        brian2.prefs.codegen.target = self.codegen_target
 
     def _load_model(self) -> ModuleType:
         if self._model is not None:
@@ -142,6 +154,7 @@ class ShiuSimulator:
         seed: int,
         parameter_overrides: dict[str, Any] | None = None,
     ) -> ShiuTrialResult:
+        self._configure_codegen()
         model = self._load_model()
         index = self._load_index()
         self._seed_simulator(seed)
